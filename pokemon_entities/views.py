@@ -60,7 +60,6 @@ def show_all_pokemons(request):
 
 def show_pokemon(request, pokemon_id):
     requested_pokemon = Pokemon.objects.get(id=pokemon_id)
-
     if requested_pokemon:
         pokemon = {
             "pokemon_id": pokemon_id,
@@ -76,6 +75,21 @@ def show_pokemon(request, pokemon_id):
                                    } if requested_pokemon.previous_evolution else None,
 
         }
+
+        try:
+            next_evolution = requested_pokemon.pokemon_set.all()[0]
+        except IndexError:
+            pass
+        else:
+            pokemon.update({
+                "next_evolution": {"pokemon_id": next_evolution.id,
+                                   "title_ru": next_evolution.title,
+                                   "img_url": request.build_absolute_uri(
+                                       next_evolution.image.url)
+
+                                   }
+            }
+            )
     else:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
 
