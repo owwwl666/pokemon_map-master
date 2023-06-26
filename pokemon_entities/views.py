@@ -11,6 +11,7 @@ MOSCOW_CENTER = [55.751244, 37.618423]
 
 
 def add_pokemon(folium_map, lat, lon, image_url):
+    """Добавляет на карту покемонов."""
     icon = folium.features.CustomIcon(
         image_url,
         icon_size=(50, 50),
@@ -22,16 +23,19 @@ def add_pokemon(folium_map, lat, lon, image_url):
 
 
 def show_all_pokemons(request):
-    """Отображает всех покемонов на главной странице."""
+    """Отображает всех покемонов на главной странице.
+
+    А также располагает на карте покемонов, которые доступны в данный момент времени.
+    """
     pokemons = Pokemon.objects.all()
-    pokemons_entities = PokemonEntity.objects.filter(appeared_at__lte=now, disappeared_at__gte=now)
+    map_displayed_pokemons = PokemonEntity.objects.filter(appeared_at__lte=now, disappeared_at__gte=now)
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in pokemons_entities:
+    for pokemon in map_displayed_pokemons:
         add_pokemon(
-            folium_map, pokemon_entity.lat,
-            pokemon_entity.lon,
-            request.build_absolute_uri(pokemon_entity.pokemon.image.url)
+            folium_map, pokemon.lat,
+            pokemon.lon,
+            request.build_absolute_uri(pokemon.pokemon.image.url)
         )
 
     pokemons_on_page = []
@@ -49,7 +53,10 @@ def show_all_pokemons(request):
 
 
 def show_pokemon(request, pokemon_id):
-    """На отдельной странице выводит информацию о каждом покемоне."""
+    """На отдельной странице выводит информацию о каждом покемоне.
+
+    Если они доступны в данный момент, то и их расположение на карте.
+    """
     requested_pokemon = Pokemon.objects.get(id=pokemon_id)
     pokemon = {
         "pokemon_id": pokemon_id,
@@ -61,7 +68,7 @@ def show_pokemon(request, pokemon_id):
         "previous_evolution": {"pokemon_id": requested_pokemon.previous_evolution_id,
                                "title_ru": requested_pokemon.previous_evolution.title,
                                "img_url": request.build_absolute_uri(requested_pokemon.previous_evolution.image.url)
-                               }
+                               } if requested_pokemon.previous_evolution else None
 
     }
 
@@ -79,15 +86,15 @@ def show_pokemon(request, pokemon_id):
         }
         )
 
-    pokemon_entities = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title, appeared_at__lte=now,
-                                                    disappeared_at__gte=now)
+    map_displayed_pokemons = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title, appeared_at__lte=now,
+                                                          disappeared_at__gte=now)
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon_entity in pokemon_entities:
+    for pokemon in map_displayed_pokemons:
         add_pokemon(
-            folium_map, pokemon_entity.lat,
-            pokemon_entity.lon,
-            request.build_absolute_uri(pokemon_entity.pokemon.image.url)
+            folium_map, pokemon.lat,
+            pokemon.lon,
+            request.build_absolute_uri(pokemon.pokemon.image.url)
         )
 
     return render(request, 'pokemon.html', context={
