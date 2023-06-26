@@ -68,11 +68,17 @@ def show_pokemon(request, pokemon_id):
             "title_en": requested_pokemon.title_en,
             "title_jp": requested_pokemon.title_jp,
             "description": requested_pokemon.description,
-            "img_url": request.build_absolute_uri(requested_pokemon.image.url)
-            if requested_pokemon.image else None
+            "img_url": request.build_absolute_uri(requested_pokemon.image.url) \
+                if requested_pokemon.image else None,
+            "previous_evolution": {"pokemon_id": requested_pokemon.previous_evolution_id,
+                                   "title_ru": requested_pokemon.previous_evolution.title,
+                                   "img_url": request.build_absolute_uri(requested_pokemon.previous_evolution.image.url)
+                                   } if requested_pokemon.previous_evolution else None,
+
         }
     else:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
+
     pokemon_entities = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title, appeared_at__lte=now,
                                                     disappeared_at__gte=now)
 
