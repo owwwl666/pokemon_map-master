@@ -59,6 +59,7 @@ def show_pokemon(request, pokemon_id):
     Если они доступны в данный момент, то и их расположение на карте.
     """
     requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
+    next_evolution = requested_pokemon.next_evolution.first()
     pokemon = {
         "pokemon_id": pokemon_id,
         "title_ru": requested_pokemon.title,
@@ -69,23 +70,14 @@ def show_pokemon(request, pokemon_id):
         "previous_evolution": {"pokemon_id": requested_pokemon.previous_evolution_id,
                                "title_ru": requested_pokemon.previous_evolution.title,
                                "img_url": request.build_absolute_uri(requested_pokemon.previous_evolution.image.url)
-                               } if requested_pokemon.previous_evolution else None
+                               } if requested_pokemon.previous_evolution else None,
+        "next_evolution": {"pokemon_id": next_evolution.id,
+                           "title_ru": next_evolution.title,
+                           "img_url": request.build_absolute_uri(
+                               next_evolution.image.url)
+                           } if next_evolution else None
 
     }
-
-    try:
-        next_evolution = requested_pokemon.pokemon_set.all()[0]
-    except IndexError:
-        pass
-    else:
-        pokemon.update({
-            "next_evolution": {"pokemon_id": next_evolution.id,
-                               "title_ru": next_evolution.title,
-                               "img_url": request.build_absolute_uri(
-                                   next_evolution.image.url)
-                               }
-        }
-        )
 
     map_displayed_pokemons = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title, appeared_at__lte=now,
                                                           disappeared_at__gte=now)
