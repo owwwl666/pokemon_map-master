@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render
 from pokemon_entities.models import Pokemon, PokemonEntity
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
 
 timezone.localtime(timezone.now())
 now = datetime.datetime.now()
@@ -57,7 +58,7 @@ def show_pokemon(request, pokemon_id):
 
     Если они доступны в данный момент, то и их расположение на карте.
     """
-    requested_pokemon = Pokemon.objects.get(id=pokemon_id)
+    requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
     pokemon = {
         "pokemon_id": pokemon_id,
         "title_ru": requested_pokemon.title,
