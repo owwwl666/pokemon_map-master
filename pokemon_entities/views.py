@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 
 timezone.localtime(timezone.now())
-now = datetime.datetime.now()
 
 MOSCOW_CENTER = [55.751244, 37.618423]
 
@@ -29,7 +28,8 @@ def show_all_pokemons(request):
     А также располагает на карте покемонов, которые доступны в данный момент времени.
     """
     pokemons = Pokemon.objects.all()
-    map_displayed_pokemons = PokemonEntity.objects.filter(appeared_at__lte=now, disappeared_at__gte=now)
+    map_displayed_pokemons = PokemonEntity.objects.filter(appeared_at__lte=datetime.datetime.now(),
+                                                          disappeared_at__gte=datetime.datetime.now())
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in map_displayed_pokemons:
@@ -79,8 +79,9 @@ def show_pokemon(request, pokemon_id):
 
     }
 
-    map_displayed_pokemons = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title, appeared_at__lte=now,
-                                                          disappeared_at__gte=now)
+    map_displayed_pokemons = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title,
+                                                          appeared_at__lte=datetime.datetime.now(),
+                                                          disappeared_at__gte=datetime.datetime.now())
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in map_displayed_pokemons:
