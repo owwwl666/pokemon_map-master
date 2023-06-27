@@ -22,6 +22,15 @@ def add_pokemon(folium_map, lat, lon, image_url):
     ).add_to(folium_map)
 
 
+def add_pokemon_evolutions(request, name_evolution, evolution):
+    """Добавляет информацию об эволюциях каждого их покемонов."""
+    return {name_evolution: {
+        "pokemon_id": evolution.id,
+        "title_ru": evolution.title,
+        "img_url": request.build_absolute_uri(evolution.image.url)} if evolution else None
+            }
+
+
 def show_all_pokemons(request):
     """Отображает всех покемонов на главной странице.
 
@@ -59,25 +68,15 @@ def show_pokemon(request, pokemon_id):
     Если они доступны в данный момент, то и их расположение на карте.
     """
     requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
-    next_evolution = requested_pokemon.next_evolution.first()
     pokemon = {
-        "pokemon_id": pokemon_id,
+        "pokemon_id": requested_pokemon.id,
         "title_ru": requested_pokemon.title,
         "title_en": requested_pokemon.title_en,
         "title_jp": requested_pokemon.title_jp,
         "description": requested_pokemon.description,
         "img_url": request.build_absolute_uri(requested_pokemon.image.url),
-        "previous_evolution": {"pokemon_id": requested_pokemon.previous_evolution_id,
-                               "title_ru": requested_pokemon.previous_evolution.title,
-                               "img_url": request.build_absolute_uri(requested_pokemon.previous_evolution.image.url)
-                               } if requested_pokemon.previous_evolution else None,
-        "next_evolution": {"pokemon_id": next_evolution.id,
-                           "title_ru": next_evolution.title,
-                           "img_url": request.build_absolute_uri(
-                               next_evolution.image.url)
-                           } if next_evolution else None
-
-    }
+        **add_pokemon_evolutions(request, "previous_evolution", requested_pokemon.previous_evolution),
+        **add_pokemon_evolutions(request, "next_evolution", requested_pokemon.next_evolutions.first())}
 
     map_displayed_pokemons = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title,
                                                           appeared_at__lte=datetime.datetime.now(),
