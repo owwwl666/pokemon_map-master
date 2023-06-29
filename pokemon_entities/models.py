@@ -16,7 +16,7 @@ class Pokemon(models.Model):
 
 class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name="Покемон",
-                                related_name='map_marked_pokemons')
+                                     related_name='pokemon_entities')
     lat = models.FloatField(verbose_name="Местоположение (Широта)")
     lon = models.FloatField(verbose_name="Местоположение (Долгота)")
     appeared_at = models.DateTimeField(verbose_name="Время появления на карте")
