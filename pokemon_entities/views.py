@@ -83,11 +83,11 @@ def show_pokemon(request, pokemon_id):
                                                           disappeared_at__gte=datetime.datetime.now())
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
-    for pokemon in map_displayed_pokemons:
+    for map_displayed_pokemon in map_displayed_pokemons:
         add_pokemon(
-            folium_map, pokemon.lat,
-            pokemon.lon,
-            request.build_absolute_uri(pokemon.pokemon.image.url)
+            folium_map, map_displayed_pokemon.lat,
+            map_displayed_pokemon.lon,
+            request.build_absolute_uri(map_displayed_pokemon.pokemon.image.url)
         )
 
     return render(request, 'pokemon.html', context={
