@@ -33,9 +33,10 @@ def show_all_pokemons(request):
 
     А также располагает на карте покемонов, которые доступны в данный момент времени.
     """
+    current_time = datetime.datetime.now()
     pokemons = Pokemon.objects.all()
-    map_displayed_pokemons = PokemonEntity.objects.filter(appeared_at__lte=datetime.datetime.now(),
-                                                          disappeared_at__gte=datetime.datetime.now())
+    map_displayed_pokemons = PokemonEntity.objects.filter(appeared_at__lte=current_time,
+                                                          disappeared_at__gte=current_time)
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for pokemon in map_displayed_pokemons:
@@ -75,9 +76,10 @@ def show_pokemon(request, pokemon_id):
         **add_pokemon_evolutions(request, "previous_evolution", requested_pokemon.previous_evolution),
         **add_pokemon_evolutions(request, "next_evolution", requested_pokemon.next_evolutions.first())}
 
+    current_time = datetime.datetime.now()
     map_displayed_pokemons = PokemonEntity.objects.filter(pokemon__title=requested_pokemon.title,
-                                                          appeared_at__lte=datetime.datetime.now(),
-                                                          disappeared_at__gte=datetime.datetime.now())
+                                                          appeared_at__lte=current_time,
+                                                          disappeared_at__gte=current_time)
 
     folium_map = folium.Map(location=MOSCOW_CENTER, zoom_start=12)
     for map_displayed_pokemon in map_displayed_pokemons:
