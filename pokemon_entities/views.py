@@ -5,6 +5,11 @@ from pokemon_entities.models import Pokemon, PokemonEntity
 from django.shortcuts import get_object_or_404
 
 MOSCOW_CENTER = [55.751244, 37.618423]
+DEFAULT_IMAGE_URL = (
+    'https://vignette.wikia.nocookie.net/pokemon/images/6/6e/%21.png/revision'
+    '/latest/fixed-aspect-ratio-down/width/240/height/240?cb=20130525215832'
+    '&fill=transparent'
+)
 
 
 def add_pokemon(folium_map, lat, lon, image_url):
@@ -24,7 +29,8 @@ def add_pokemon_evolutions(request, name_evolution, evolution):
     return {name_evolution: {
         "pokemon_id": evolution.id,
         "title_ru": evolution.title,
-        "img_url": request.build_absolute_uri(evolution.image.url)} if evolution else None
+        "img_url": request.build_absolute_uri(
+            DEFAULT_IMAGE_URL if None else evolution.image.url)} if evolution else None
             }
 
 
