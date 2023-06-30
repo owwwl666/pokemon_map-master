@@ -3,6 +3,7 @@ import datetime
 from django.shortcuts import render
 from pokemon_entities.models import Pokemon, PokemonEntity
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 MOSCOW_CENTER = [55.751244, 37.618423]
 DEFAULT_IMAGE_URL = (
@@ -39,6 +40,8 @@ def show_all_pokemons(request):
 
     А также располагает на карте покемонов, которые доступны в данный момент времени.
     """
+    timezone.localtime(timezone.now())
+
     current_time = datetime.datetime.now()
     pokemons = Pokemon.objects.all()
     map_displayed_pokemons = PokemonEntity.objects.filter(appeared_at__lte=current_time,
@@ -71,6 +74,8 @@ def show_pokemon(request, pokemon_id):
 
     Если они доступны в данный момент, то и их расположение на карте.
     """
+    timezone.localtime(timezone.now())
+    
     requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
     pokemon = {
         "pokemon_id": requested_pokemon.id,

@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 
 
 class Pokemon(models.Model):
@@ -16,7 +15,6 @@ class Pokemon(models.Model):
 
 
 class PokemonEntity(models.Model):
-    timezone.localtime(timezone.now())
     pokemon = models.ForeignKey(Pokemon, on_delete=models.CASCADE, verbose_name="Покемон",
                                 related_name='pokemon_entities')
     lat = models.FloatField(verbose_name="Местоположение (Широта)")
