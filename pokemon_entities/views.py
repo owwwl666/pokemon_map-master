@@ -30,9 +30,10 @@ def add_pokemon_evolutions(request, name_evolution, evolution):
     return {name_evolution: {
         "pokemon_id": evolution.id,
         "title_ru": evolution.title,
-        "img_url": request.build_absolute_uri(
-            DEFAULT_IMAGE_URL if None else evolution.image.url)} if evolution else None
-            }
+        "img_url": request.build_absolute_uri(evolution.image.url) if evolution.image \
+            else request.build_absolute_uri(DEFAULT_IMAGE_URL)
+        }
+        if evolution else None}
 
 
 def show_all_pokemons(request):
@@ -75,7 +76,7 @@ def show_pokemon(request, pokemon_id):
     Если они доступны в данный момент, то и их расположение на карте.
     """
     timezone.localtime(timezone.now())
-    
+
     requested_pokemon = get_object_or_404(Pokemon, id=pokemon_id)
     pokemon = {
         "pokemon_id": requested_pokemon.id,
