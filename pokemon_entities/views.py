@@ -32,8 +32,8 @@ def add_pokemon_evolutions(request, name_evolution, evolution):
         "title_ru": evolution.title,
         "img_url": request.build_absolute_uri(evolution.image.url) if evolution.image \
             else request.build_absolute_uri(DEFAULT_IMAGE_URL)
-        }
-        if evolution else None}
+    }
+    if evolution else None}
 
 
 def show_all_pokemons(request):
